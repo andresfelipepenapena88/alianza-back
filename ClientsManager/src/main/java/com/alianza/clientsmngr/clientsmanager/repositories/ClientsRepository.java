@@ -12,4 +12,13 @@ import java.util.List;
 public interface ClientsRepository extends JpaRepository<Client, Long> {
     @Query("SELECT c FROM Client c WHERE c.sharedKey LIKE %:sharedKey%")
     List<Client> getClientsBySharedKey(@Param("sharedKey") String sharedKey);
+
+    @Query(
+        "SELECT c FROM Client c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :#{#client.name}, '%'))"+
+            " AND LOWER(c.phone) LIKE LOWER(CONCAT('%', :#{#client.phone}, '%'))"+
+            " AND LOWER(c.email) LIKE LOWER(CONCAT('%', :#{#client.email}, '%'))"+
+            " AND c.startDate LIKE %:#{#client.startDate}%"+
+            " AND c.endDate LIKE %:#{#client.endDate}%"
+    )
+    List<Client> advancedSearch(@Param("client") Client client);
 }
